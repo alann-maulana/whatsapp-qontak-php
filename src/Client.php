@@ -69,7 +69,7 @@ final class Client implements ClientInterface
         Assert::keyExists($responseData, 'id');
         Assert::keyExists($responseData, 'name');
 
-        return new Response((string) $responseData['id'], (string) $responseData['name'], $responseData);
+        return new Response((string) $responseData['id'], (string) $responseData['name'], $responseBody);
     }
 
     private function getAccessToken(): void
