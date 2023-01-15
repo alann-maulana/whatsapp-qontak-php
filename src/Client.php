@@ -62,14 +62,22 @@ final class Client implements ClientInterface
         /** @var array $responseBody */
         $responseBody = \json_decode((string) $response->getBody(), true);
 
-        Assert::keyExists($responseBody, 'data');
+        $id = null;
+        $name = null;
 
-        /** @var array<string, string|int> $responseData */
-        $responseData = $responseBody['data'];
-        Assert::keyExists($responseData, 'id');
-        Assert::keyExists($responseData, 'name');
+        if (isset($responseBody['data'])) {
+            $responseData = $responseBody['data'];
 
-        return new Response((string) $responseData['id'], (string) $responseData['name'], $responseBody);
+            if (isset($responseData['id'])) {
+                $id = $responseData['id'];
+            }
+
+            if (isset($responseData['name'])) {
+                $name = $responseData['name'];
+            }
+        }
+
+        return new Response($id, $name, $responseBody);
     }
 
     private function getAccessToken(): void
