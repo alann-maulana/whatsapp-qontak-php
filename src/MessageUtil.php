@@ -34,6 +34,19 @@ final class MessageUtil
             $params['header'] = $this->message->getHeader()->toArray();
         }
 
+        $receiver = $this->message->getReceiver();
+
+        if ($receiver->getContactListId() !== NULL) {
+            return [
+                'name' => $receiver->getName(),
+                'contact_list_id' => $receiver->getContactListId(),
+                'language' => [
+                    'code' => $this->message->getLanguage()->getCode(),
+                ],
+                'parameters' => $params,
+            ];
+        }
+
         return [
             'to_name' => $this->message->getReceiver()->getName(),
             'to_number' => $this->message->getReceiver()->getTo(),
@@ -53,7 +66,7 @@ final class MessageUtil
 
             $params[] = [
                 'key' => $iteration,
-                'value' => \sprintf('param%s', $iteration),
+                'value' => $body->getKey() !== NULL ? $body->getKey() : \sprintf('param%s', $iteration),
             ] + $body->toArray();
         }
 
