@@ -7,7 +7,7 @@ namespace Inisiatif\WhatsappQontakPhp\Message;
 final class Receiver
 {
     /**
-     * @var string
+     * @var string|null
      */
     private $to;
 
@@ -16,6 +16,9 @@ final class Receiver
      */
     private $name;
 
+    /**
+     * @var string|null
+     */
     private $contact_list_id;
 
     public function __construct(string $to, string $name, $contact_list_id = NULL)
@@ -25,7 +28,7 @@ final class Receiver
         $this->contact_list_id = $contact_list_id;
     }
 
-    public function getTo(): string
+    public function getTo()
     {
         return $this->to;
     }

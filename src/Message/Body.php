@@ -7,10 +7,13 @@ namespace Inisiatif\WhatsappQontakPhp\Message;
 final class Body
 {
     /**
-     * @var string
+     * @var string|null
      */
     private $value;
 
+    /**
+     * @var string|null
+     */
     private $key;
 
     public function __construct($value = NULL, $key = NULL)
@@ -19,7 +22,7 @@ final class Body
         $this->key = $key;
     }
 
-    public function getValue(): string
+    public function getValue()
     {
         return $this->value;
     }
