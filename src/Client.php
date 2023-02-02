@@ -41,12 +41,12 @@ final class Client implements ClientInterface
         $this->credential = $credential;
     }
 
-    public function send(string $templateId, string $channelId, Message $message): Response
+    public function send(string $templateId, string $channelId, Message $message, $bulk = false): Response
     {
         $this->getAccessToken();
 
         $response = $this->httpClient->post(
-            'https://service-chat.qontak.com/api/open/v1/broadcasts/whatsapp/direct',
+            "https://service-chat.qontak.com/api/open/v1/broadcasts/whatsapp" . ($bulk ? '' : '/direct'),
             [
                 'content-type' => 'application/json',
                 'Authorization' => \sprintf('Bearer %s', $this->accessToken ?? ''),
