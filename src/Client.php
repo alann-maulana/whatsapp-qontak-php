@@ -11,6 +11,8 @@ use Http\Client\Common\HttpMethodsClient;
 use Http\Discovery\Psr17FactoryDiscovery;
 use Inisiatif\WhatsappQontakPhp\Message\Message;
 use Http\Client\Common\HttpMethodsClientInterface;
+use Http\Message\MultipartStream\MultipartStreamBuilder;
+use Psr\Http\Message\RequestFactoryInterface;
 
 final class Client implements ClientInterface
 {
@@ -25,17 +27,36 @@ final class Client implements ClientInterface
     private $accessToken = null;
 
     /**
+     * @var HttpClient
+     */
+    private $client;
+
+    /**
      * @var Credential
      */
     private $credential;
 
+    /**
+     * @var RequestFactoryInterface
+     */
+    private $requestFactory;
+
+    /**
+     * @var StreamFactoryInterface
+     */
+    private $streamFactory;
+
     public function __construct(Credential $credential, HttpClient $httpClient = null)
     {
+        $this->client = HttpClientDiscovery::find();
+        $this->requestFactory = Psr17FactoryDiscovery::findRequestFactory();
+        $this->streamFactory = Psr17FactoryDiscovery::findStreamFactory();
+
         /** @psalm-suppress PropertyTypeCoercion */
         $this->httpClient = $httpClient ?? new HttpMethodsClient(
-            HttpClientDiscovery::find(),
-            Psr17FactoryDiscovery::findRequestFactory(),
-            Psr17FactoryDiscovery::findStreamFactory()
+            $this->client,
+            $this->requestFactory,
+            $this->streamFactory,
         );
 
         $this->credential = $credential;
@@ -78,6 +99,33 @@ final class Client implements ClientInterface
         }
 
         return new Response($id, $name, $responseBody);
+    }
+
+    public function createContactList(string $name, $file, string $source_type = 'spreadsheet')
+    {
+        $this->getAccessToken();
+
+        $builder = new MultipartStreamBuilder($this->streamFactory);
+        $builder
+            ->addResource('name', $name)
+            ->addResource('source_type', $source_type)
+            ->addResource('file', $file, ['filename' => 'contact-list.xls']);
+
+        $multipartStream = $builder->build();
+        $boundary = $builder->getBoundary();
+
+        $request = $this->requestFactory
+            ->createRequest(
+                'POST',
+                'https://service-chat.qontak.com/api/open/v1/contacts/contact_lists/async',
+            )
+            ->withBody($multipartStream)
+            ->withHeader('Content-Type', \sprintf('multipart/form-data; boundary=%s', $boundary))
+            ->withHeader('Authorization', \sprintf('Bearer %s', $this->accessToken ?? ''));
+
+        $response = $this->client->sendRequest($request);
+
+        return \json_decode((string) $response->getBody(), true);
     }
 
     private function getAccessToken(): void

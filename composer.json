@@ -13,6 +13,7 @@
         "php": "^7.1 || ^8.0",
         "ext-json": "*",
         "php-http/client-common": "^2.5",
+        "php-http/multipart-stream-builder": "^1.2",
         "psr/http-client-implementation": "^1.0",
         "webmozart/assert": "^1.11"
     },
