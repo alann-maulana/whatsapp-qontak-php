@@ -109,7 +109,7 @@ final class Client implements ClientInterface
             \sprintf(
                 'https://service-chat.qontak.com/api/open/v1/broadcasts/%s/whatsapp/log%s',
                 $id,
-                isset($filters) ? \sprintf('?%', $filters) : ''
+                isset($filters) ? \sprintf('?%s', $filters) : ''
             ),
             [
                 'Authorization' => \sprintf('Bearer %s', $this->accessToken ?? ''),
