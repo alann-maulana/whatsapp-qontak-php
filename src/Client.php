@@ -105,16 +105,13 @@ final class Client implements ClientInterface
     {
         $this->getAccessToken();
 
-        $response = $this->httpClient->get(
-            \sprintf(
-                'https://service-chat.qontak.com/api/open/v1/broadcasts/%s/whatsapp/log%s',
-                $id,
-                isset($filters) ? \sprintf('?%s', $filters) : ''
-            ),
-            [
-                'Authorization' => \sprintf('Bearer %s', $this->accessToken ?? ''),
-            ],
+        $url = \sprintf(
+            'https://service-chat.qontak.com/api/open/v1/broadcasts/%s/whatsapp/log%s',
+            $id,
+            isset($filters) ? \sprintf('?filters=%s', $filters) : ''
         );
+        $header = ['Authorization' => \sprintf('Bearer %s', $this->accessToken ?? '')];
+        $response = $this->httpClient->get($url, $header);
 
         /** @var array $responseBody */
         return \json_decode((string) $response->getBody(), true);
