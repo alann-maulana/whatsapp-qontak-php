@@ -101,6 +101,25 @@ final class Client implements ClientInterface
         return new Response($id, $name, $responseBody);
     }
 
+    public function getBroadcastLog(string $id, $filters = NULL): array
+    {
+        $this->getAccessToken();
+
+        $response = $this->httpClient->get(
+            \sprintf(
+                'https://service-chat.qontak.com/api/open/v1/broadcasts/%s/whatsapp/log%s',
+                $id,
+                isset($filters) ? \sprintf('?%', $filters) : ''
+            ),
+            [
+                'Authorization' => \sprintf('Bearer %s', $this->accessToken ?? ''),
+            ],
+        );
+
+        /** @var array $responseBody */
+        return \json_decode((string) $response->getBody(), true);
+    }
+
     public function createContactList(string $name, $file, string $source_type = 'spreadsheet')
     {
         $this->getAccessToken();
