@@ -144,6 +144,30 @@ final class Client implements ClientInterface
         return \json_decode((string) $response->getBody(), true);
     }
 
+    public function uploadFile($file, $filename)
+    {
+        $this->getAccessToken();
+
+        $builder = new MultipartStreamBuilder($this->streamFactory);
+        $builder->addResource('file', $file, ['filename' => $filename]);
+
+        $multipartStream = $builder->build();
+        $boundary = $builder->getBoundary();
+
+        $request = $this->requestFactory
+            ->createRequest(
+                'POST',
+                'https://service-chat.qontak.com/api/open/v1/file_uploader',
+            )
+            ->withBody($multipartStream)
+            ->withHeader('Content-Type', \sprintf('multipart/form-data; boundary=%s', $boundary))
+            ->withHeader('Authorization', \sprintf('Bearer %s', $this->accessToken ?? ''));
+
+        $response = $this->client->sendRequest($request);
+
+        return \json_decode((string) $response->getBody(), true);
+    }
+
     private function getAccessToken(): void
     {
         if ($this->accessToken === null) {

@@ -28,7 +28,7 @@ final class Receiver
         $this->contact_list_id = $contact_list_id;
     }
 
-    public function getTo()
+    public function getTo(): string|null
     {
         return $this->to;
     }
@@ -38,7 +38,7 @@ final class Receiver
         return $this->name;
     }
 
-    public function getContactListId()
+    public function getContactListId(): string|null
     {
         return $this->contact_list_id;
     }

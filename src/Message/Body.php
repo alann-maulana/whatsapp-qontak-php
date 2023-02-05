@@ -22,12 +22,12 @@ final class Body
         $this->key = $key;
     }
 
-    public function getValue()
+    public function getValue(): string|null
     {
         return $this->value;
     }
 
-    public function getKey()
+    public function getKey(): string|null
     {
         return $this->key;
     }
